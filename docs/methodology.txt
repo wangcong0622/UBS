@@ -1,0 +1,109 @@
+Overview: 
+The study leverages UBS AI LLMs to track the stance of Central Banks’ speakers on monetary policy by examining the language used in their speeches and press conferences. 
+
+The study enables you to:
+
+- Track the overall hawkishness or dovishness for each bank and monitor its evolution over time.
+- Identify the topics being discussed (e.g., inflation) and assess their contribution to the overall hawkishness or dovishness index.
+- Analyze the contribution of each speaker to the bank’s hawkishness or dovishness index.
+- Observe shifts in each speaker’s sentiment (hawkish or dovish) over different periods, both overall and in relation to specific topics.
+  
+Source and data attribution: 
+- FED: 
+- Source: UBS Evidence Lab, underlying data obtained from US Federal Reserve website. 
+- ECB: 
+- Source: UBS Evidence Lab, underlying data obtained from European Central Bank website. 
+- BOJ: 
+- Source: UBS Evidence Lab, underlying data obtained from Bank of Japan website.
+- FED of New York:
+- Source: UBS Evidence Lab, underlying data obtained from US Federal Reserve Bank of New York website.  
+  
+Evidence Lab Branding Guidelines: 
+- As per Research Management Guidelines, please review Branding Guidelines 
+  
+Disclaimer: 
+This analysis was drafted with the assistance of AI tools and has undergone thorough human review.
+  
+Methodology: 
+For each bank, three distinct LLMs were trained to analyze the language used by its speakers over time. Each speech is first segmented into sentences.
+
+Topics: Identifies the dominant topic discussed in each sentence. Only topics relevant to monetary policy are considered for further analysis. The identified topics include:
+- Balance Sheet (including Quantitative Easing & Quantitative Tightening)
+- Currency & Exchange Rate
+- Employment
+- GDP/Growth
+- Inflation/Prices
+- Monetary Policy/Interest Rates Setting
+Sentences where the dominant topic is not among these are excluded from the analysis. Excluded sentences cover finance stability, regulations, supervision, non-core content, and linking phrases (e.g., "Good morning").
+
+Relevancy: Determines the relevancy of each sentence to the hawkishness/dovishness sentiment detection. 
+
+Sentiment: Detects the speaker’s stance towards monetary policy in each relevant sentence on a 5 point scale: 
+- Explicitly Hawkish 
+- Hawkish 
+- Mixed Argument 
+- Dovish 
+- Explicitly Dovish 
+   
+Key Metrics: 
+Sentiment Index: 
+The sentiment scores of sentences are aggregated to calculate a speech-level average score. The overall average score is a weighted sum of relevant sentences classified as Explicitly Dovish, Dovish, Mixed, Hawkish, and Explicitly Hawkish, scored as -1, -0.5, 0, 0.5, and 1 respectively. This sum is normalized by the total number of sentences (both relevant and irrelevant) discussing a monetary policy-relevant topic in the speech.
+Example: 
+If a speech contains: 
+- 150 sentences 
+- 100 had a monetary policy relevant topic associated with them. Among those: 
+- 35 were relevant for sentiment 
+- 65  were irrelevant for sentiment 
+- 50 didn’t have a monetary policy relevant associated topic 
+If out of the 35, 10 were explicitly hawkish sentences, 14 were hawkish sentences, 5  were mixed sentences, 4  were dovish sentences and 2 were explicitly dovish sentences, we would calculate the overall score as follows: 
+
+
+
+
+
+
+
+
+
+Next, an exponentially weighted moving average is applied for smoothing purposes. Users can select between 15, 30, and 40 speech windows, with weights decaying exponentially over time. A shorter window is more reactive to recent sentiment shifts but noisier, while a longer window is smoother but slower to react.
+
+Since speeches do not occur daily, speech scores are forward-filled between speeches for continuity.
+
+
+Speaker Sentiment Contributions: 
+The same methodology is also applied for each individual speaker.
+Example: 
+Speaker X was explicitly hawkish in 1 sentence, hawkish in 2 sentences, mixed in 0 sentences, dovish in 1 sentence, and explicitly dovish in 0 sentences. The speaker delivered a total of 25 sentences that had a monetary policy relevant topic associated with them.
+Under the above scenario we would calculate the speaker’s score as follows: 
+
+
+
+
+
+
+
+
+
+
+Topic Level Sentiment: 
+Sentiment is also calculated at a topic level where we normalize for each topic by multiplying the sentiment score within the topic by the number of sentences the topic appeared in a speech and then dividing by the total number of sentences across all topics (monetary policy relevant) in the whole speech. 
+Example: 
+The average sentiment score for the inflation topic was 0.3, 20 sentences talked about Inflation and the speech had a total of 120 sentences with monetary policy relevant topics. 
+Under the above scenario we would calculate the Inflation topic score as follows: 
+
+
+
+
+
+
+
+
+
+Caveats: 
+- General: 
+- National banks speakers (ECB) are not included in the analyses, which only tracks appearances from the Executive Board members (ECB). Press conferences statements and Q&A are not included for BOJ.
+- Figures, captions, tables and any sentences not discussing a monetary policy relevant topic are excluded from the analysis. 
+- For press conference Q&As, only the speaker’s comments are included in the sentiment score calculations and not the questions themselves. 
+- Currency & Exchange Rate sentences are only included for BOJ.
+
+

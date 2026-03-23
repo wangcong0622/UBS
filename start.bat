@@ -1,7 +1,7 @@
 rem call C:\SMTAMSYS\Python313\Lib\venv\scripts\nt\activate.bat
 
 S:
-cd S:\Ѓy1230Ѓzѓ}ѓ‹ѓ`ђн—Є‰^—pU\30_‹Ж–±—pЊВђlѓtѓHѓ‹ѓ_\A2100197_‰¤га\06_ѓcЃ[ѓ‹\UBS
-streamlit run streamlit_app.py
+cd S:\пїЅy1230пїЅzпїЅ}пїЅпїЅпїЅ`пїЅн—ЄпїЅ^пїЅpU\30_пїЅЖ–пїЅпїЅpпїЅВђlпїЅtпїЅHпїЅпїЅпїЅ_\A2100197_пїЅпїЅпїЅпїЅ\06_пїЅcпїЅ[пїЅпїЅ\UBS
+streamlit run app.py
 
 rem pause
