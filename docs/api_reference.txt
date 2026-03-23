@@ -1,0 +1,248 @@
+
+
+Evidence Lab API
+Our RESTful data service offers easy access to insight-ready datasets.
+ 
+
+To get started:
+
+1. Generate an API Key
+
+2. View available datasets and important links using the catalogue/data-asset endpoint
+
+3. From the catalogue response, find the desired dataset links.  The examples below show the "maritime-trade" framework and the "choke-point" view.
+
+4. Get the list of fields, types and descriptions using the model endpoint, specifying the framework and view name from the catalogue
+
+5. Get the number of rows using the count endpoint, specifying the framework, view name and data asset key from the catalog
+
+6. Get the distinct values for a field using the distinct endpoint, specifying the framework, view name and data asset key from the catalog and the field name from the model
+
+7. Set filters to optimize the query - see examples in "Filtering" below
+
+8. Get the data using the data endpoint, specifying the framework, view name and data asset key from the catalog and setting a filter using the field names and field values
+
+ 
+
+
+Example Python Code
+ 
+Replace the 'XXXXX' with your token.
+Replace the endpoints and the filters (highlighted code) as appropriate for the desired data asset.
+ 
+ 
+import json
+import pandas as pd
+import requests
+from urllib import parse
+import time
+
+RETRIES = 3
+
+class UBSEvidenceLab(object):
+
+    def __init__(self, token, proxy=None):
+        self.server = "https://neo.ubs.com/api/evidence-lab/api-framework/"
+        self.proxy = proxy
+        self.token = token
+
+        
+    def _http_get(self, url):
+        return requests.get(
+            url,
+            headers={"Authorization": f"Bearer {self.token}"},
+            proxies=self.proxy,
+            # Set this to True or False depending on need
+            verify=False
+        )
+
+    def get(self, endpoint):
+        url = parse.urljoin(self.server, endpoint)
+        for attempt in range(RETRIES+1):
+            response = self._http_get(url)
+            if response.status_code in [500, 503] and attempt < RETRIES:
+                print(f"Request failed. Retrying {attempt + 1}/{RETRIES}...")
+                time.sleep(5 ** (attempt + 1)) 
+            else:
+                break
+        return self.handle_response(response)
+
+    
+    def _http_post(self, url, payload):
+        return requests.post(
+            url=url,
+            headers={"Authorization": f"Bearer {self.token}"},
+            json=payload,
+            proxies=self.proxy,
+            verify=False,
+        )
+
+    
+    def post(self, endpoint, payload=None):
+        url = parse.urljoin(self.server, endpoint)
+        for attempt in range(RETRIES+1):
+            response = self._http_post(url, payload)
+            if response.status_code in [500, 503] and attempt < RETRIES:
+                print(f"Request failed. Retrying {attempt + 1}/{RETRIES}...")
+                time.sleep(5 ** (attempt + 1)) 
+            else:
+                break
+        return self.handle_response(response)
+
+    
+
+    def handle_response(self, response):
+        self.validate_response(response)
+        data = response.json()
+        return data
+
+        
+    @staticmethod
+    def validate_response(response):
+        if response.status_code == 401:
+            raise Exception("Invalid credentials")
+        if response.status_code == 404:
+            raise Exception("API not found")
+        if response.status_code >= 400:
+            data = response.json if isinstance(response.json, dict) else response.json()
+            raise Exception(data.get("message"))
+        if response.status_code == 200 and 'HTML' in response.text:
+            raise Exception("Invalid credentials")
+
+
+if __name__ == '__main__':
+    
+    token = "XXXXX"
+
+    endpoint = "maritime-trade/choke-point/v2/data?dataAssetKey=10017"
+    filter_dict = '{"filterType": ">", "field": "periodEndDate","value": "2023-06-01"}'
+
+    
+    client = UBSEvidenceLab(token)    
+    df = pd.DataFrame()   
+    filter_dict = "{'filters':[" + str(filter_dict) + "]}"
+    filter_dict = filter_dict.replace("\'", "\"")
+    filter_dict = json.loads(filter_dict)
+    
+    while endpoint != "":
+        data = client.post(endpoint=endpoint, payload=filter_dict)
+        df_data_page: pd.DataFrame = pd.json_normalize(data['results'])
+        df = pd.concat([df, df_data_page])
+        if "data" in endpoint:
+            endpoint = data['meta']['next']
+            endpoint = endpoint.replace(client.server, '' )
+        else:
+            endpoint = ""
+    print(df)
+
+ 
+
+
+Filtering
+ 
+
+API V2 filters are managed via dictionary with 3 components:
+
+filterType - the operator to use (e.g. =, >=, >, <=, <)
+field - the field on which to filter
+value - the value to filter on
+ 
+
+Filters should be wrapped using a "filters" element.  Example payload:
+
+ 
+
+{
+  "filters": [
+    {
+      "field": "chokePoint",
+      "filterType": "=",
+      "value": "Hormuz"
+    },        
+
+    {"filterType": "IN",
+
+    "field": "shipType",
+
+    "values": ["TANKER - OIL PRODUCTS","TANKER - CRUDE", "TANKER - LNG"]
+
+    }, 
+
+    {"filterType": ">",
+
+    "field": "periodEndDate",
+
+    "value": "2023-01-01"
+
+    } 
+
+  ]
+}
+
+catalogue
+This endpoint gives you the details of all data assets available in ELI API V2.
+
+
+
+GET
+​/api​/evidence-lab​/api-framework​/catalogue​/data-asset​/v2
+model
+This endpoint gives you the schema including field names, field types and descriptions for a specified view of a framework.
+
+
+
+GET
+​/api​/evidence-lab​/api-framework​/maritime-trade​/choke-point​/v2​/model
+distinct
+This endpoint will return the distinct values for a specified field in a specified view of a framework. The data asset key can be part of the URL or included as a filter. Filters can be added to get a subset of the data.
+
+
+
+POST
+​/api​/evidence-lab​/api-framework​/maritime-trade​/choke-point​/v2​/distinct
+count
+This endpoint will return the count of rows for a specified view of a framework. The data asset key can be part of the URL or included as a filter. Filters can be added to get a subset of the data.
+
+
+
+POST
+​/api​/evidence-lab​/api-framework​/maritime-trade​/choke-point​/v2​/count
+data
+This endpoint will return the data for a specified view of a framework. The data asset key can be part of the URL or included as a filter. Filters can be added to get a subset of the data.
+
+
+
+POST
+​/api​/evidence-lab​/api-framework​/maritime-trade​/choke-point​/v2​/data
+
+Schemas
+Count Response
+Data Response{
+meta	{...}
+results	[...]
+}
+Model Response{
+meta	{...}
+results	[...]
+}
+QueryDataFilter{
+field*	string
+title: Field
+filterType*	string
+title: Filter Type
+value*	string
+title: Value
+}
+Distinct Response{
+meta	{...}
+results	[...]
+}
+Data Asset Catalogue Response{
+meta	{...}
+results	[...]
+}
+RequestBody{
+filters	Data Filters[...]
+}
+ 
+ 
