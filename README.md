@@ -1,269 +1,240 @@
-# UBS Economic Intelligence Dashboard
+# UBS Evidence Lab - Fund Manager Data Dashboard
 
-UBS Evidence LabおよびNowcasting APIを使用した経済分析ダッシュボード
-
----
-
-## 📌 概要
-
-このStreamlitアプリケーションは、UBS Evidence Lab APIから中央銀行の政策センチメントデータを取得し、
-さらにUBS Nowcasting APIから経済指標の予測値を提供するインタラクティブな分析ダッシュボードです。
-
-マクロ投資マネージャーおよびエコノミスト向けに、金融政策スタンスと経済指標の予測を一体的に分析できます。
-
-### 対象中央銀行
-- 🇯🇵 **日本銀行** (Bank of Japan)
-- 🇺🇸 **連邦準備制度** (Federal Reserve System)  
-- 🇪🇺 **欧州中央銀行** (European Central Bank)
-
-### 対象経済指標
-1. ISM Manufacturing（製造業指数）
-2. Auto SAAR（自動車売上：年率換算）
-3. Retail Sales（小売売上：除自動車、除ガソリン）
-4. Nonfarm Payrolls（非農業部門雇用）
-5. Private Construction Spending（民間建設支出）
-6. CPI（消費者物価指数）
-7. Core CPI（コアCPI）
+ファンドマネージャー向けの UBS Evidence Lab API データ確認ダッシュボード
 
 ---
 
-## 🚀 クイックスタート
+## 概要
+
+Streamlit ベースのモジュラーダッシュボードアプリケーションです。
+UBS Evidence Lab の各種 API からデータを取得し、インタラクティブに分析・可視化できます。
+
+**モジュラー設計**により、新しい UBS API サブアプリを簡単に追加できます。
+
+### 現在のモジュール
+
+| モジュール | 説明 | データソース |
+|-----------|------|------------|
+| 🏦 **Central Bank Sentiment** | 主要中央銀行（BOJ, FED, ECB）の政策スタンス・センチメント分析 | dataAssetKey: 10487 |
+| 📈 **Nowcasting** | 米国主要経済指標のリアルタイム予測と実績値比較 | dataAssetKey: 10441 |
+| 💼 **Job Listings Monitor** | 米国求人掲載データによる雇用動向モニタリング | dataAssetKey: 10224 |
+
+---
+
+## クイックスタート
 
 ### 1. 環境設定
 
-#### 必要なパッケージ
 ```bash
 pip install -r requirements.txt
 ```
 
-#### APIキーの設定
-`API key.txt` ファイルにUBS Evidence Lab APIトークンを保存
+### 2. APIキーの設定
 
-### 2. アプリケーション起動
+`API key.txt` に UBS Evidence Lab API トークンを保存
+
+### 3. 起動
 
 ```bash
-streamlit run streamlit_app.py
+streamlit run app.py
 ```
 
-ブラウザが自動的に開きます（通常は http://localhost:8501）
-
-### 3. データ取得
-
-#### 🏠 在宅作業時
-1. 左サイドバーの **「会社のProxyを使用する」のチェックを外す**
-2. データ取得期間を指定（例: 過去365日）
-3. **「データを取得」** ボタンをクリック
-4. 1-3分待機
-
-#### 🏢 会社作業時
-1. 左サイドバーの **「会社のProxyを使用する」にチェック**
-2. 同様にデータ取得期間を指定してデータ取得
+ブラウザが自動で開きます（通常 http://localhost:8501）
 
 ---
 
-## 📊 ダッシュボード構成
-
-### メインアプリケーション（streamlit_app.py）
-
-#### サイドバー: 📖 メソドロジー
-- 中央銀行政策スタンス追跡の詳細メソドロジー
-- AI LLMs活用方法、スコア計算方法、データ品質
-- 初めて使用する場合はまずここをお読みください
-
-#### Tab 0: 📈 Overview
-- 中央銀行別センチメント推移の一覧比較
-- Smoothed（平滑化）/Unsmoothed（生データ）の切り替え
-- **独立フィルター**: 期間選択、中央銀行選択、データタイプ選択
-
-#### Tab 1: 📊 Topic Analysis  
-- トピック別センチメント寄与度分析
-- 時系列トレンド、バーチャート表示
-- **独立フィルター**: 期間選択、中央銀行選択、トピック選択
-
-#### Tab 2: 🎤 Speaker Analysis
-- 発言者別センチメント分析（寄与度・時系列）
-- 主要発言者のランキングとトレンド
-- **独立フィルター**: 期間選択、中央銀行選択
-
-#### Tab 3: 💾 Data Export
-- 6種類のデータセットをCSV/Excel/JSON形式でエクスポート
-  1. Sentiment Smoothed Data
-  2. Sentiment Unsmoothed Data
-  3. Topic Contribution Data
-  4. Speaker Contribution Data
-  5. Speaker Monthly Data
-  6. Speaker × Topic Data
-
-### Nowcastingモジュール（nowcasting_app.py）
-
-#### 📖 Nowcasting とは
-- 非伝統的なビッグデータを活用した経済指標予測システム
-- 公式発表より3～4週間早い予測を提供
-
-#### 📈 チャート分析
-- 予測値と実績値の比較
-- 複数指標の同時表示・比較
-
-#### 📊 統計情報
-- 予測精度の統計指標
-- 指標別の詳細情報
-
-#### 🥧 CPI寄与度分解
-- CPI構成要素の寄与度分析
-- 各要素の推移追跡
-
-#### 📥 データ一括出力
-- 全データのCSV/Excel形式でのエクスポート
-
----
-
-## 📈 センチメントスコアの解釈
-
-| スコア | 意味 | 政策スタンス |
-|--------|------|------------|
-| **正 (+)** | タカ派的 (Hawkish) | 金融引き締め的 |
-| **ゼロ付近** | 中立的 (Neutral) | バランス |
-| **負 (-)** | ハト派的 (Dovish) | 金融緩和的 |
-
----
-
-## 🎯 主な機能
-
-### ✅ 中央銀行政策センチメント分析
-- **AI LLMsベース**: 3つの異なるLLMで演説・声明を分析
-- **マルチ次元分析**: スタンス、トピック、スピーカー別分析
-- **EWMA平滑化**: 15/30/40日窓の選択可能
-- **リアルタイム更新**: 新規発言・声明を自動追跡
-
-### ✅ 経済指標Nowcasting
-- **7指標カバー**: ISM、自動車、小売、雇用、建設、CPI、CoreCPI
-- **予測と実績比較**: 予測精度の検証
-- **CPI寄与度分解**: インフレ圧力の詳細分析
-- **高頻度データ**: ビッグデータベースの活用
-
-### ✅ インタラクティブ分析
-- **各機能独立フィルター**: 最適な分析環境
-- **時間範囲選択**: すべての時系列チャートで柔軟に選択
-- **マルチ中央銀行比較**: 複数銀行の同時比較分析
-- **トピック/スピーカー深掘り**: 詳細な因子分析
-
-### ✅ 高度な可視化
-- **Plotly インタラクティブチャート**: ズーム、パン、詳細表示
-- **複数ビュータイプ**: 時系列、バーチャート、ヒートマップ
-- **ファセットチャート**: 複数観点からの同時比較
-- **カスタムカラーパレット**: 国別・スタンス別の色分け
-
-### ✅ データエクスポート
-- **複数フォーマット**: CSV、Excel、JSON対応
-- **フィルター適用済み**: 分析条件を反映したデータ
-- **生データアクセス**: 独自分析用の完全データセット
-
----
-
-## 🔧 技術仕様
-
-### Central Bank Policy Sentiment API
-
-**Overview**:  
-UBS AI LLMsを活用して中央銀行スピーカーの演説・声明を分析し、金融政策スタンスを追跡
-
-**主要機能**:
-- 全体的なタカ派度/ハト派度の時系列追跡
-- トピック別（インフレ、雇用等）寄与度分析
-- スピーカー別の個別スタンス分析
-- 異なる期間・トピック別のセンチメント推移観察
-
-**データソース**:
-- FED: 米国連邦準備制度ウェブサイト
-- ECB: 欧州中央銀行ウェブサイト（執行役員会メンバー）
-- BOJ: 日本銀行ウェブサイト（演説のみ）
-
-**技術仕様**:
-- **dataAssetKey**: 10487
-- **studyId**: 7276
-- **EWMA Span**: 15/30/40日窓（デフォルト: 30）
-- **スコア範囲**: -1.0（明確にハト派） ～ +1.0（明確にタカ派）
-
-### UBS Nowcasting API
-
-**Overview**:  
-非伝統的なビッグデータを活用した経済指標予測システム。公式発表より3～4週間早い予測を提供
-
-**対象指標**: ISM、自動車、小売、雇用、建設、CPI、CoreCPI
-
-**技術仕様**:
-- **dataAssetKey**: 10441
-- **予測頻度**: 月次（毎月25日）
-- **データソース**: クレジットカード取引、調査、トラッキング、Google Trends等
-
----
-
-## 📝 ファイル構成
+## ファイル構成
 
 ```
 UBS/
-├── streamlit_app.py           # メインアプリケーション（中央銀行政策センチメント）
-├── nowcasting_app.py          # Nowcastingモジュール（経済指標予測）
-├── requirements.txt           # 依存パッケージリスト
-├── API key.txt               # APIキー設定ファイル
-├── API doc.txt               # API仕様書
-├── README.md                 # このファイル
-└── dataset.txt               # データセット情報
+├── app.py                              # メインエントリポイント（ホーム画面・ナビゲーション）
+├── requirements.txt                    # 依存パッケージ
+├── API key.txt                         # APIトークン
+├── start.bat                           # Windows起動スクリプト
+│
+├── config/                             # 共通設定
+│   └── settings.py                     # プロキシ、トークン、定数
+│
+├── core/                               # 共通基盤
+│   ├── api_client.py                   # UBS Evidence Lab API クライアント
+│   └── ui_components.py               # 共通UIコンポーネント（CSS, カード, エクスポート）
+│
+├── modules/                            # サブアプリ群
+│   ├── registry.py                     # モジュール登録・管理
+│   ├── sentiment/                      # 中央銀行センチメント
+│   │   ├── data.py                     #   データ取得・処理
+│   │   └── dashboard.py               #   ダッシュボードUI
+│   ├── nowcasting/                     # 経済指標ナウキャスティング
+│   │   ├── data.py
+│   │   └── dashboard.py
+│   └── job_listings/                   # 求人掲載モニター
+│       ├── data.py
+│       └── dashboard.py
+│
+└── docs/                               # ドキュメント
+    ├── api_reference.txt               # Evidence Lab API 仕様書
+    ├── sentiment_api.txt               # センチメント API スキーマ
+    ├── nowcasting_api.txt              # ナウキャスティング API スキーマ
+    ├── methodology.txt                 # 分析メソドロジー
+    └── dataset_catalog.txt             # 全データセットカタログ
 ```
 
 ---
 
-## 📝 変更履歴
+## 新しいサブアプリの追加方法
 
-### 2025年12月15日 - v4.0
-- **メソドロジー日本語化**: 中央銀行政策スタンスのメソドロジーを詳細日本語説明に
-- **グラフサイズ改善**: OverviewとTopicタブのグラフを画面幅いっぱいに表示
-- **UI統一**: 両モジュール（Sentiment/Nowcasting）のスタイル統一
-- **不要ファイル削除**: テストファイルとキャッシュを整理
+モジュラー設計により、3ステップで新しい UBS API サブアプリを追加できます。
 
-### 2025年12月12日 - v3.0
-- **タブ統合**: 7タブ → 5タブに最適化
-- **UX改善**: グローバルフィルター廃止 → 各タブ独立フィルター
-- **プロフェッショナル化**: 日本語表現の改善
+### Step 1: モジュールディレクトリを作成
 
-### 2025年12月11日 - v2.1
-- **API仕様準拠**: EWMA Span修正（30日 → 40日）
-- **新機能**: データ統計パネル、データ品質チェック
+```
+modules/new_module/
+├── __init__.py
+├── data.py          # データ取得・処理ロジック
+└── dashboard.py     # show_dashboard() 関数を実装
+```
 
-### 2025年12月10日 - v2.0
-- **12タブ構成**: 包括的な分析機能実装
-- **プロキシ設定**: 在宅/会社作業の切り替え対応
+### Step 2: data.py と dashboard.py を実装
+
+```python
+# modules/new_module/data.py
+ENDPOINT = "framework-name/view/v2/data?dataAssetKey=XXXXX"
+
+def fetch_data(client, start_date_str, end_date_str):
+    filters = {
+        "filters": [
+            {"filterType": ">=", "field": "periodEndDate", "value": start_date_str},
+            {"filterType": "<=", "field": "periodEndDate", "value": end_date_str}
+        ]
+    }
+    return client.fetch_paginated(ENDPOINT, filters)
+```
+
+```python
+# modules/new_module/dashboard.py
+from core.api_client import UBSAPIClient
+from core.ui_components import apply_common_css, render_sidebar_header
+
+def show_dashboard():
+    apply_common_css()
+    st.title("New Module Dashboard")
+    # ... ダッシュボードの実装
+```
+
+### Step 3: レジストリに登録
+
+`modules/registry.py` の `MODULES` リストに追加:
+
+```python
+{
+    "id": "new_module",
+    "name": "New Module Name",
+    "icon": "🔬",
+    "description": "モジュールの説明",
+    "import_path": "modules.new_module.dashboard",
+    "function": "show_dashboard",
+},
+```
+
+ホーム画面とナビゲーションに自動的に反映されます。
 
 ---
 
-## 🛠️ トラブルシューティング
+## モジュール詳細
 
-### データが取得できない
-1. **ネットワーク接続確認** - インターネット接続が安定しているか
-2. **プロキシ設定確認** - 在宅/会社作業環境に合わせて設定
-3. **APIキー確認** - `API key.txt`に有効なトークンが保存されているか
-4. **ファイアウォール** - `neo.ubs.com`への接続がブロックされていないか
+### 🏦 Central Bank Sentiment Tracker
 
-### グラフが表示されない
-1. データが正しく取得されているか確認
-2. フィルター設定が厳しすぎないか確認
-3. ブラウザのキャッシュをクリア
+UBS AI LLMs を活用して中央銀行スピーカーの演説を分析し、金融政策スタンスを追跡。
 
-### エクスポートができない
-- Excel形式の場合: `openpyxl`パッケージがインストールされているか確認
-  ```bash
-  pip install openpyxl
-  ```
+**対象:** BOJ（日本銀行）, FED（連邦準備制度）, ECB（欧州中央銀行）
+
+| タブ | 内容 |
+|-----|------|
+| Overview | 中央銀行別センチメント推移の一覧比較（Smoothed/Unsmoothed） |
+| Topic Analysis | トピック別（インフレ、雇用等）寄与度分析 |
+| Speaker Analysis | 発言者別センチメント分析・ヒートマップ |
+| Data Export | CSV/Excel/JSON エクスポート |
+
+**センチメントスコア:** -1.0（ハト派/緩和的） 〜 +1.0（タカ派/引締め的）
+
+### 📈 Nowcasting
+
+非伝統的ビッグデータを活用した経済指標の予測。公式発表より数週間早い推計を提供。
+
+**対象指標:** ISM Manufacturing, Auto SAAR, Nonfarm Payrolls, CPI, Core CPI, Private Construction Spending, Industrial Production
+
+| タブ | 内容 |
+|-----|------|
+| チャート分析 | 予測値 vs 実績値の比較チャート |
+| 統計情報 | 指標別の精度統計 |
+| CPI寄与度 | CPI構成要素の寄与度分解（積み上げ棒グラフ + 折れ線） |
+| データ出力 | 全データの一括エクスポート |
+
+### 💼 Job Listings Monitor
+
+約50,000社の企業キャリアサイトから直接取得した求人掲載データで雇用動向をモニタリング。
+
+**データ:** 2016年〜、週次更新、BLS JOLTS 分類準拠
+
+| タブ | 内容 |
+|-----|------|
+| セクター概要 | セクター別求人掲載動向の概観 |
+| 時系列分析 | セクター別の求人数推移 |
+| 地域・職種 | 地域別・職種別の分析 |
+| データ出力 | CSV/Excel/JSON エクスポート |
+
+**利用可能ビュー:** Time Series (v3), Regional Analysis (v2), Job Family (v2)
 
 ---
 
-## 📞 サポート
+## 技術仕様
 
-- UBS Evidence Lab APIに関する問い合わせ: UBS APIサポート
-- アプリケーションに関する問い合わせ: 開発チーム
+- **フレームワーク:** Streamlit
+- **可視化:** Plotly（インタラクティブチャート）
+- **API:** UBS Evidence Lab API v2（JWT Bearer認証）
+- **データ処理:** Pandas, NumPy
+- **エクスポート:** CSV, Excel (openpyxl), JSON
+
+### 依存パッケージ
+
+```
+streamlit, pandas, requests, plotly, openpyxl, urllib3, numpy
+```
 
 ---
 
-## 📄 ライセンス
+## トラブルシューティング
 
-このアプリケーションはUBS Evidence Lab APIを使用しています。データの使用には適切なライセンスが必要です。
+| 問題 | 対処法 |
+|------|--------|
+| データが取得できない | ネットワーク接続確認、`API key.txt` のトークン確認、`neo.ubs.com` への接続確認 |
+| グラフが表示されない | データ取得済みか確認、フィルター条件を緩める |
+| Excel出力エラー | `pip install openpyxl` を実行 |
+| プロキシ関連エラー | `config/settings.py` のプロキシ設定を環境に合わせて変更 |
+
+---
+
+## 変更履歴
+
+### v5.0 (2026-03)
+- **モジュラーアーキテクチャへ移行**: フラットな2ファイル構成 → パッケージ構造
+- **共通API クライアント**: 認証・リトライ・ページネーションを統一 (`core/api_client.py`)
+- **共通UIコンポーネント**: CSS・カード・エクスポートを共通化 (`core/ui_components.py`)
+- **モジュールレジストリ**: 新規サブアプリ追加を3ステップで完了 (`modules/registry.py`)
+- **Job Listings Monitor 追加**: 米国求人掲載データ分析サブアプリを新規実装
+- **ファイル命名の改善**: 役割が明確なディレクトリ・ファイル名
+
+### v4.0 (2025-12)
+- メソドロジー日本語化、グラフサイズ改善、UI統一
+
+### v3.0 (2025-12)
+- タブ統合（7→5）、各タブ独立フィルター化
+
+### v2.0 (2025-12)
+- 12タブ構成、プロキシ切り替え対応
+
+---
+
+## ライセンス
+
+このアプリケーションは UBS Evidence Lab API を使用しています。データの使用には適切なライセンスが必要です。
