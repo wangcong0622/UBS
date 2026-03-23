@@ -1,0 +1,51 @@
+{
+  "meta" : {
+    "parameters" : { },
+    "errors" : [ ],
+    "recordsOnPage" : 1,
+    "self" : "https://neo.ubs.com/api/evidence-lab/api-framework/us-nowcasting/default/v2/model",
+    "catalogue" : "https://neo.ubs.com/api/evidence-lab/api-framework/catalogue/framework/v2",
+    "modelUrl" : "https://neo.ubs.com/api/evidence-lab/api-framework/us-nowcasting/default/v2/model"
+  },
+  "results" : [ {
+    "frameworkKey" : "37",
+    "frameworkName" : "us-nowcasting",
+    "fields" : [ {
+      "fieldName" : "dataAssetKey",
+      "dataType" : "INTEGER",
+      "description" : "Asset Key having one to many relation with Metrics for the Asset"
+    }, {
+      "fieldName" : "clientStudyName",
+      "dataType" : "STRING",
+      "description" : "The name of the data asset."
+    }, {
+      "fieldName" : "period",
+      "dataType" : "STRING",
+      "description" : "Indicates whether the metric value represents a day, week, month or quarter period aggregation."
+    }, {
+      "fieldName" : "periodEndDate",
+      "dataType" : "TIMESTAMP",
+      "description" : "The date of the day, week last day, month last day, quarter last day for which each metric is calculated"
+    }, {
+      "fieldName" : "nowcastEffectiveDate",
+      "dataType" : "TIMESTAMP",
+      "description" : "Release date (the date when the period end date's metric is available/released)"
+    }, {
+      "fieldName" : "geographyName",
+      "dataType" : "STRING",
+      "description" : "Name of the geographic region for which nowcasting is performed"
+    }, {
+      "fieldName" : "countryIsoCode",
+      "dataType" : "STRING",
+      "description" : "The 3 character country ISO code."
+    }, {
+      "fieldName" : "metricName",
+      "dataType" : "STRING",
+      "description" : "The name of the metric (e.g. ubs_nowcast_auto_saar, ubs_nowcast_auto_saar_mm, ubs_nowcast_ism, etc.)"
+    }, {
+      "fieldName" : "metricValue",
+      "dataType" : "DOUBLE",
+      "description" : "Release date (the date when the period end date's metric is available/released)"
+    } ]
+  } ]
+}

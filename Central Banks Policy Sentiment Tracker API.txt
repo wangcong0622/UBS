@@ -1,0 +1,83 @@
+{
+  "meta" : {
+    "parameters" : { },
+    "errors" : [ ],
+    "recordsOnPage" : 1,
+    "self" : "https://neo.ubs.com/api/evidence-lab/api-framework/central-banks-policy-sentiment/default/v2/model",
+    "catalogue" : "https://neo.ubs.com/api/evidence-lab/api-framework/catalogue/framework/v2",
+    "modelUrl" : "https://neo.ubs.com/api/evidence-lab/api-framework/central-banks-policy-sentiment/default/v2/model"
+  },
+  "results" : [ {
+    "frameworkKey" : "54",
+    "frameworkName" : "central-banks-policy-sentiment",
+    "fields" : [ {
+      "fieldName" : "dataAssetKey",
+      "dataType" : "INTEGER",
+      "description" : "Asset Key having one-to-many relation with Metrics for the Asset."
+    }, {
+      "fieldName" : "studyId",
+      "dataType" : "INTEGER",
+      "description" : "The unique identifier assigned to each dataset by UBS Evidence Lab."
+    }, {
+      "fieldName" : "studyName",
+      "dataType" : "STRING",
+      "description" : "The unique name of the dataset from UBS Evidence Lab."
+    }, {
+      "fieldName" : "releaseDate",
+      "dataType" : "TIMESTAMP",
+      "description" : "The date the data was released and became available to external clients."
+    }, {
+      "fieldName" : "period",
+      "dataType" : "STRING",
+      "description" : "The periodicity of the data, or interval of time between adjacent period_end_date values. Expected value are 'day', 'month', 'quarter', e.g. 'month' refers to aggregated metrics for documents dated in a given month."
+    }, {
+      "fieldName" : "periodEndDate",
+      "dataType" : "TIMESTAMP",
+      "description" : "The end date of a given period for which the metric values are calculated."
+    }, {
+      "fieldName" : "entityId",
+      "dataType" : "STRING",
+      "description" : "The unique identifier assigned to each distinct entity by UBS Evidence Lab."
+    }, {
+      "fieldName" : "entityName",
+      "dataType" : "STRING",
+      "description" : "The name of the entity (bank) that the metric values refer to."
+    }, {
+      "fieldName" : "entityType",
+      "dataType" : "STRING",
+      "description" : "The categorical descriptor of the entity. Expected value is 'bank'."
+    }, {
+      "fieldName" : "setName",
+      "dataType" : "STRING",
+      "description" : "Populated with the name of the speaker when the record is for a specific speaker at a central bank, otherwise 'all speakers'."
+    }, {
+      "fieldName" : "setType",
+      "dataType" : "STRING",
+      "description" : "Populated with 'speaker'."
+    }, {
+      "fieldName" : "documentType",
+      "dataType" : "STRING",
+      "description" : "The categorical descriptor of the central bank document. Expected values are 'speeches', 'press conferences', or 'all documents'."
+    }, {
+      "fieldName" : "metric",
+      "dataType" : "STRING",
+      "description" : "Topic level aggregated sentiment score, such as 'employment', 'growth', or 'all topics'."
+    }, {
+      "fieldName" : "metricType",
+      "dataType" : "STRING",
+      "description" : "The type of sentiment score. Expected values are 'sentiment score smoothed' for EWMA scores (span = 40) and 'sentiment score unsmoothed' for unsmoothed scores."
+    }, {
+      "fieldName" : "metricValue",
+      "dataType" : "DOUBLE",
+      "description" : "The sentiment score value for a given record. A negative sentiment score indicates dovishness, and a positive sentiment score indicates hawkishness. Where metric_value is 0 this indicates a true sentiment score of 0."
+    }, {
+      "fieldName" : "updateFlag",
+      "dataType" : "STRING",
+      "description" : "The type of update. Expected values are 'INSERT' for new records, 'UPDATE' for modified records, and 'NO_CHANGE' for unchanged records."
+    }, {
+      "fieldName" : "updateDate",
+      "dataType" : "TIMESTAMP",
+      "description" : "The date the metric values were last updated for a given record. This may differ from release_date for 'NO_CHANGE' records and is presented to provide visibility into revisions."
+    } ]
+  } ]
+}
